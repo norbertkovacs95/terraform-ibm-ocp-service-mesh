@@ -1,16 +1,22 @@
 terraform {
   required_version = ">= 1.9.0"
-
-  #
-  # Developer tips:
-  #   - Ensure that there is always 1 example locked into the lowest provider version of the range defined in the main
-  #     module's version.tf (usually a basic example), and 1 example that will always use the latest provider version.
-  #
-
   required_providers {
+    # Pin to the lowest provider version of the range defined in the main module to ensure lowest version still works
     ibm = {
       source  = "IBM-Cloud/ibm"
-      version = "1.79.0"
+      version = "= 1.79.2"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "= 3.0.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "= 2.16.1"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "= 0.9.1"
     }
   }
 }

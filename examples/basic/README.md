@@ -1,11 +1,3 @@
-# Basic example
+# Basic OCP cluster single zone and single subnet with RedHat ServiceMesh v3
 
-<!--
-The basic example should call the module(s) stored in this repository with a basic configuration.
-Note, there is a pre-commit hook that will take the title of each example and include it in the repos main README.md.
-The text below should describe exactly what resources are provisioned / configured by the example.
--->
-
-An end-to-end basic example that will provision the following:
-- A new resource group if one is not passed in.
-- A new standard plan Cloud Object Storage instance using the root level module.
+This sample deploys the RedHat Service Mesh operators, and a Service Mesh / istio control plane, a basic ingress and a basic egress in different namespaces

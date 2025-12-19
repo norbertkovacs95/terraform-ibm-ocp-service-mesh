@@ -1,36 +1,30 @@
-########################################################################################################################
+##############################################################################
 # Input Variables
-########################################################################################################################
+##############################################################################
 
-#
-# Developer tips:
-#   - Below are some common module input variables
-#   - They should be updated for input variables applicable to the module being added
-#   - Use variable validation when possible
-#
-
-variable "name" {
+variable "cluster_id" {
   type        = string
-  description = "A descriptive name used to identify the resource instance."
-}
-
-variable "plan" {
-  type        = string
-  description = "The name of the plan type supported by service."
-  default     = "standard"
-  validation {
-    condition     = contains(["standard", "cos-one-rate-plan"], var.plan)
-    error_message = "The specified pricing plan is not available. The following plans are supported: 'standard', 'cos-one-rate-plan'"
-  }
+  description = "Id of the target IBM Cloud OpenShift Cluster"
 }
 
 variable "resource_group_id" {
   type        = string
-  description = "The ID of the resource group where you want to create the service."
+  description = "The ID of the resource group for the OpenShift Cluster."
 }
 
-variable "resource_tags" {
-  type        = list(string)
-  description = "List of resource tag to associate with the instance."
-  default     = []
+variable "develop_mode" {
+  type        = bool
+  description = "If true raise time waited for operator deployment and undeployment to allow to debug the cluster"
+  default     = false
+}
+
+variable "cluster_config_endpoint_type" {
+  description = "Specify which type of endpoint to use for for cluster config access: 'default', 'private', 'vpe', 'link'. 'default' value will use the default endpoint of the cluster."
+  type        = string
+  default     = "default"
+  nullable    = false
+  validation {
+    error_message = "Invalid Endpoint Type. Valid values are 'default', 'private', 'vpe', or 'link'"
+    condition     = contains(["default", "private", "vpe", "link"], var.cluster_config_endpoint_type)
+  }
 }
