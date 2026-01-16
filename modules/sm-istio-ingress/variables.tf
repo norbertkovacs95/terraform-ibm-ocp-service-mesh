@@ -269,3 +269,9 @@ variable "ingress_topology_spread_constraints" {
   type        = any
   default     = null
 }
+
+variable "ingress_extra_service_annotations" {
+  description = "Additional annotations to add to the Service metadata (merged under .Values.ingress.extraServiceAnnotations)."
+  type        = map(string)
+  default     = null
+}
