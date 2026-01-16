@@ -77,6 +77,14 @@ locals {
       "extraServiceAnnotations" : var.ingress_extra_service_annotations
     }
   }
+
+  ingress_networkpolicy_enabled = {
+    "ingress" : {
+      "networkPolicy" : {
+        enabled : var.ingress_networkpolicy_enabled
+      }
+    }
+  }
 }
 
 ##############################################################################
@@ -190,6 +198,7 @@ resource "helm_release" "istio_ingress" {
     yamlencode(local.ingress_tolerations),
     yamlencode(local.ingress_topology_spread_constraints),
     yamlencode(local.ingress_extra_service_annotations),
+    yamlencode(local.ingress_networkpolicy_enabled),
   ]
 
 }

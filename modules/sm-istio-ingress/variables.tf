@@ -275,3 +275,9 @@ variable "ingress_extra_service_annotations" {
   type        = map(string)
   default     = null
 }
+
+variable "ingress_networkpolicy_enabled" {
+  description = "Enable creation of the ingress NetworkPolicy (requires istioselectors to be non-empty)."
+  type        = bool
+  default     = false
+}
