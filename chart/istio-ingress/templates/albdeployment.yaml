@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.ingress.name }}
+  name: {{ default .Values.ingress.name .Values.ingress.deploymentName }}
   namespace: {{ .Values.ingress.namespace }}
 spec:
   {{- if .Values.ingress.replicacount }}
@@ -86,18 +86,3 @@ spec:
         {{- end }}
         {{- end }}
 {{- end }}
-#---
-# Allow outside traffic to access the gateway
-# This is optional, only needed in case your cluster contains restrictive NetworkPolicies
-#apiVersion: networking.k8s.io/v1
-#kind: NetworkPolicy
-#metadata:
-#  name: gatewayingress
-#spec:
-#  podSelector:
-#    matchLabels:
-#      istio: ingressgateway
-#  ingress:
-#    - {}
-#  policyTypes:
-#  - Ingress

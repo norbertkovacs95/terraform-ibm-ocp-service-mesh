@@ -281,3 +281,9 @@ variable "ingress_networkpolicy_enabled" {
   type        = bool
   default     = false
 }
+
+variable "ingress_deployment_name" {
+  description = "Optional override for the ingress Deployment name. If null or empty, the default name is used."
+  type        = string
+  default     = null
+}

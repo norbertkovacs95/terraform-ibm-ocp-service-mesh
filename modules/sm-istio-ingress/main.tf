@@ -77,7 +77,6 @@ locals {
       "extraServiceAnnotations" : var.ingress_extra_service_annotations
     }
   }
-
   ingress_networkpolicy_enabled = {
     "ingress" : {
       "networkPolicy" : {
@@ -181,8 +180,11 @@ resource "helm_release" "istio_ingress" {
     {
       name  = "ingress.proxyProtocol.allowWithoutProxyProtocol"
       value = var.ingress_proxy_protocol_allow_without
-    }
-
+    },
+    {
+      name = "ingress.deploymentName"
+      value = var.ingress_deployment_name
+    },
   ]
 
   # yamlencode(local.ingress_namespace_enrollment_labels),
