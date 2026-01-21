@@ -84,6 +84,12 @@ locals {
       }
     }
   }
+
+  egress_extra_deployment_labels = length(var.ingress_extra_deployment_labels) == 0 ? {} : {
+    "ingress" = {
+      "extraDeploymentLabels" = var.ingress_extra_deployment_labels
+    }
+  }
 }
 
 ##############################################################################
@@ -182,7 +188,7 @@ resource "helm_release" "istio_ingress" {
       value = var.ingress_proxy_protocol_allow_without
     },
     {
-      name = "ingress.deploymentName"
+      name  = "ingress.deploymentName"
       value = var.ingress_deployment_name
     },
   ]
@@ -201,6 +207,7 @@ resource "helm_release" "istio_ingress" {
     yamlencode(local.ingress_topology_spread_constraints),
     yamlencode(local.ingress_extra_service_annotations),
     yamlencode(local.ingress_networkpolicy_enabled),
+    yamlencode(local.egress_extra_deployment_labels)
   ]
 
 }

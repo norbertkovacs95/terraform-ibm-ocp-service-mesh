@@ -6,9 +6,6 @@ metadata:
   annotations:
 spec:
   type: {{ .Values.egress.svctype }}
-  {{- if .Values.egress.externalTrafficPolicy }}
-  externalTrafficPolicy: {{ .Values.egress.externalTrafficPolicy }}
-  {{- end }}
   {{- if .Values.egress.internalTrafficPolicy }}
   internalTrafficPolicy: {{ .Values.egress.internalTrafficPolicy }}
   {{- end }}

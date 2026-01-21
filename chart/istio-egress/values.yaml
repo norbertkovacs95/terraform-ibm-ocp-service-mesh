@@ -12,7 +12,6 @@ egress:
     name: svc-http
     proto: TCP # UDP
     targetPort: 8080
-  externalTrafficPolicy: Cluster
   internalTrafficPolicy: Local
   autoscale:
     enabled: false

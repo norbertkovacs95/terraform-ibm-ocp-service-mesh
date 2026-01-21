@@ -85,20 +85,6 @@ variable "egress_extra_deployment_labels" {
   EOT
 }
 
-variable "egress_extra_deployment_selectors" {
-  type = map(string)
-  default = {}
-  nullable = true
-  description = <<-EOT
-    Label that defines an additional identity for the egress gateway.
-    This label is applied to:
-      - Deployment spec.selector.matchLabels
-      - Pod spec.template.metadata.labels
-    Because it is included in the Deployment selector, it MUST remain stable for the lifetime
-    of the Deployment. Changing this after creation will require recreating the Deployment.
-  EOT
-}
-
 variable "egress_ports" {
   type = list(object(
     {
@@ -121,12 +107,6 @@ variable "egress_internal_traffic_policy" {
   type        = string
   default     = "Cluster"
   description = "Internal traffic policy configuration for the egress. Allowed values are Cluster and Local. Default to Cluster. For more details refer to https://istio.io/latest/docs/tasks/security/authorization/authz-egress/."
-  nullable    = false
-}
-variable "egress_external_traffic_policy" {
-  type        = string
-  default     = "Cluster"
-  description = "External traffic policy configuration for the egress. Allowed values are Cluster and Local. Default to Cluster. For more details refer to https://istio.io/latest/docs/tasks/security/authorization/authz-egress/."
   nullable    = false
 }
 

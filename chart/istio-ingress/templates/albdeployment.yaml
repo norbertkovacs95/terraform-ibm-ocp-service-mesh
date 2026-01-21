@@ -4,6 +4,10 @@ kind: Deployment
 metadata:
   name: {{ default .Values.ingress.name .Values.ingress.deploymentName }}
   namespace: {{ .Values.ingress.namespace }}
+  {{- if .Values.ingress.extraDeploymentLabels }}
+  labels:
+  {{- toYaml .Values.ingress.extraDeploymentLabels | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.ingress.replicacount }}
   replicas: {{ .Values.ingress.replicacount }}

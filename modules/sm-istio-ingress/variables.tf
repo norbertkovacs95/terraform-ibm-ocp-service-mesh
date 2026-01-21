@@ -107,6 +107,17 @@ variable "ingress_selectors" {
   description = "Istio ingress selectors to route inbound ingress traffic to the expected istio gateway and to the expected workload. Default to \"app\": \"istio-ingress\" \"istio\": \"istio-ingress\". Null not allowed"
 }
 
+variable "ingress_extra_deployment_labels" {
+  type = map(string)
+  default = {}
+  nullable = true
+  description = <<-EOT
+    Llabel that defines an additional identity for the egress gateway.
+    This label is applied to:
+      - Deployment metadata.labels
+  EOT
+}
+
 variable "ingress_alb_subnets" {
   type        = list(string)
   default     = []
