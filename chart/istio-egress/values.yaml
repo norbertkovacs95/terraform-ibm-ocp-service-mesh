@@ -4,6 +4,8 @@ egress:
   namespace: istio-system
   istioNamespaceEnrollmentLabels: {}
   istioselectors: {}
+  extraDeploymentLabels: {}
+  extraDeploymentSelectors: {}
   svctype: ClusterIP
   ports:
   - port: 80

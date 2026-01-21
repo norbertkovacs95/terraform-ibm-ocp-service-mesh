@@ -74,6 +74,31 @@ variable "egress_selectors" {
   description = "Istio egress selectors to route outbound egress traffic to the expected istio gateway and to the expected workload. Default to \"app\": \"istio-egress\" \"istio\": \"istio-egress\" \"gateway-instance\": \"istio-egressgateway\". Null not allowed"
 }
 
+variable "egress_extra_deployment_labels" {
+  type = map(string)
+  default = {}
+  nullable = true
+  description = <<-EOT
+    Llabel that defines an additional identity for the egress gateway.
+    This label is applied to:
+      - Deployment metadata.labels
+  EOT
+}
+
+variable "egress_extra_deployment_selectors" {
+  type = map(string)
+  default = {}
+  nullable = true
+  description = <<-EOT
+    Label that defines an additional identity for the egress gateway.
+    This label is applied to:
+      - Deployment spec.selector.matchLabels
+      - Pod spec.template.metadata.labels
+    Because it is included in the Deployment selector, it MUST remain stable for the lifetime
+    of the Deployment. Changing this after creation will require recreating the Deployment.
+  EOT
+}
+
 variable "egress_ports" {
   type = list(object(
     {

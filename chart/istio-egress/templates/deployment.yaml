@@ -2,7 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ default .Values.egress.name .Values.egress.deploymentName }}
-  namespace: {{ .Values.egress.namespace }}
+  namespace: {{ .Values.egress.namespace }}\
+  {{- if .Values.egress.extraDeploymentLabels }}
+  labels:
+  {{- toYaml .Values.egress.extraDeploymentLabels | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.egress.replicacount }}
   replicas: {{ .Values.egress.replicacount }}
@@ -11,6 +15,9 @@ spec:
   selector:
     matchLabels:
       {{- toYaml .Values.egress.istioselectors | nindent 6 }}
+      {{- if .Values.egress.extraDeploymentSelectors }}
+      {{- toYaml .Values.egress.extraDeploymentSelectors | nindent 6 }}
+      {{- end }}
   {{- end }}
   template:
     metadata:
@@ -19,6 +26,9 @@ spec:
       labels:
         {{- if .Values.egress.istioselectors }}
         {{- toYaml .Values.egress.istioselectors | nindent 8 }}
+        {{- end }}
+        {{- if .Values.egress.extraDeploymentSelectors }}
+        {{- toYaml .Values.egress.extraDeploymentSelectors | nindent 8 }}
         {{- end }}
         sidecar.istio.io/inject: "true"
         istio.io/gateway: "{{ .Values.egress.name }}.{{ .Values.egress.namespace }}"

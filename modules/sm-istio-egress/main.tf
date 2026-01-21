@@ -59,6 +59,18 @@ locals {
       "topologySpreadConstraints" : var.egress_topology_spread_constraints
     }
   }
+
+  egress_extra_deployment_labels = length(var.egress_extra_deployment_labels) == 0 ? {} : {
+    "egress" = {
+      "extraDeploymentLabels" = var.egress_extra_deployment_labels
+    }
+  }
+
+  egress_extra_deployment_selectors = length(var.egress_extra_deployment_selectors) == 0 ? {} : {
+    "egress" = {
+      "extraDeploymentSelectors" = var.egress_extra_deployment_labels
+    }
+  }
 }
 
 ##############################################################################
@@ -148,6 +160,8 @@ resource "helm_release" "istio_egress" {
     yamlencode(local.egress_affinity),
     yamlencode(local.egress_tolerations),
     yamlencode(local.egress_topology_spread_constraints),
+    yamlencode(local.egress_extra_deployment_labels),
+    yamlencode(local.egress_extra_deployment_selectors),
   ]
 
 }
