@@ -98,6 +98,12 @@ variable "egress_internal_traffic_policy" {
   description = "Internal traffic policy configuration for the egress. Allowed values are Cluster and Local. Default to Cluster. For more details refer to https://istio.io/latest/docs/tasks/security/authorization/authz-egress/."
   nullable    = false
 }
+variable "egress_external_traffic_policy" {
+  type        = string
+  default     = "Cluster"
+  description = "External traffic policy configuration for the egress. Allowed values are Cluster and Local. Default to Cluster. For more details refer to https://istio.io/latest/docs/tasks/security/authorization/authz-egress/."
+  nullable    = false
+}
 
 variable "egress_autoscale_configuration" {
   type = object({
@@ -196,4 +202,16 @@ variable "egress_tolerations" {
   type        = list(any)
   default     = []
   description = "Istio egress tolerations configuration. Default to tolerate 'dedicated: edge' taint. For more details # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#toleration-v1-core"
+}
+
+variable "egress_topology_spread_constraints" {
+  description = "List of topologySpreadConstraints to apply to the egress Deployment(s). See k8s apps/v1 TopologySpreadConstraint schema."
+  type        = any
+  default     = null
+}
+
+variable "egress_deployment_name" {
+  description = "Optional override for the egress Deployment name. If null or empty, the default name is used."
+  type        = string
+  default     = null
 }
