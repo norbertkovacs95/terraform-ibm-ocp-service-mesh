@@ -18,7 +18,7 @@ metadata:
     {{- if (eq .Values.ingress.lbtype "sdnlb") }}
     service.kubernetes.io/ibm-load-balancer-cloud-provider-enable-features: service-dnlb
     service.kubernetes.io/ibm-load-balancer-cloud-provider-ip-type: private
-    service.kubernetes.io/ibm-load-balancer-cloud-provider-vpc-node-selector: {{ .Values.ingress.sdnlbWorkerPoolSelector.name | quote }}={{ .Values.ingress.sdnlbWorkerPoolSelector.value | quote }}
+    service.kubernetes.io/ibm-load-balancer-cloud-provider-vpc-node-selector: {{ printf "%s=%s" .Values.ingress.sdnlbWorkerPoolSelector.name .Values.ingress.sdnlbWorkerPoolSelector.value | quote }}
     {{- end }}
     {{- if .Values.ingress.extraServiceAnnotations }}
     {{- toYaml .Values.ingress.extraServiceAnnotations | nindent 4 }}
