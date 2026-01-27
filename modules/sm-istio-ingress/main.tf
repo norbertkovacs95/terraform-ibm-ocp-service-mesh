@@ -66,6 +66,30 @@ locals {
     }
   }
 
+  ingress_topology_spread_constraints = var.ingress_topology_spread_constraints == null ? {} : {
+    "ingress" : {
+      "topologySpreadConstraints" : var.ingress_topology_spread_constraints
+    }
+  }
+
+  ingress_extra_service_annotations = var.ingress_extra_service_annotations == null ? {} : {
+    "ingress" : {
+      "extraServiceAnnotations" : var.ingress_extra_service_annotations
+    }
+  }
+  ingress_networkpolicy_enabled = {
+    "ingress" : {
+      "networkPolicy" : {
+        enabled : var.ingress_networkpolicy_enabled
+      }
+    }
+  }
+
+  egress_extra_deployment_labels = length(var.ingress_extra_deployment_labels) == 0 ? {} : {
+    "ingress" = {
+      "extraDeploymentLabels" = var.ingress_extra_deployment_labels
+    }
+  }
 }
 
 ##############################################################################
@@ -162,8 +186,11 @@ resource "helm_release" "istio_ingress" {
     {
       name  = "ingress.proxyProtocol.allowWithoutProxyProtocol"
       value = var.ingress_proxy_protocol_allow_without
-    }
-
+    },
+    {
+      name  = "ingress.deploymentName"
+      value = var.ingress_deployment_name
+    },
   ]
 
   # yamlencode(local.ingress_namespace_enrollment_labels),
@@ -177,6 +204,10 @@ resource "helm_release" "istio_ingress" {
     yamlencode(local.ingress_resources_configuration),
     yamlencode(local.ingress_affinity),
     yamlencode(local.ingress_tolerations),
+    yamlencode(local.ingress_topology_spread_constraints),
+    yamlencode(local.ingress_extra_service_annotations),
+    yamlencode(local.ingress_networkpolicy_enabled),
+    yamlencode(local.egress_extra_deployment_labels)
   ]
 
 }
@@ -186,7 +217,7 @@ resource "null_resource" "confirm_ingress_operational_alb" {
   depends_on = [helm_release.istio_ingress]
   count      = var.ingress_loadbalancer_type == "alb" ? 1 : 0
   provisioner "local-exec" {
-    command     = "${path.module}/scripts/confirm-ingress-operational.sh \"${var.namespace}\" \"ingress-${var.name}\""
+    command     = "${path.module}/scripts/confirm-ingress-operational.sh \"${var.namespace}\" \"${var.name}\""
     interpreter = ["/bin/bash", "-c"]
     environment = {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
@@ -199,7 +230,7 @@ resource "null_resource" "confirm_ingress_operational_nlb" {
   depends_on = [helm_release.istio_ingress]
   for_each   = var.ingress_loadbalancer_type == "nlb" ? var.ingress_nlb_zones_subnets : {}
   provisioner "local-exec" {
-    command     = "${path.module}/scripts/confirm-ingress-operational.sh \"${var.namespace}\" \"ingress-${var.name}-${each.value}\""
+    command     = "${path.module}/scripts/confirm-ingress-operational.sh \"${var.namespace}\" \"${var.name}-${each.value}\""
     interpreter = ["/bin/bash", "-c"]
     environment = {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path

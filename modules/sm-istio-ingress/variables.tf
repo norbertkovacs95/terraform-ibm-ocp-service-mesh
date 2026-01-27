@@ -107,6 +107,17 @@ variable "ingress_selectors" {
   description = "Istio ingress selectors to route inbound ingress traffic to the expected istio gateway and to the expected workload. Default to \"app\": \"istio-ingress\" \"istio\": \"istio-ingress\". Null not allowed"
 }
 
+variable "ingress_extra_deployment_labels" {
+  type = map(string)
+  default = {}
+  nullable = true
+  description = <<-EOT
+    Llabel that defines an additional identity for the egress gateway.
+    This label is applied to:
+      - Deployment metadata.labels
+  EOT
+}
+
 variable "ingress_alb_subnets" {
   type        = list(string)
   default     = []
@@ -262,4 +273,28 @@ variable "ingress_proxy_protocol_allow_without" {
   description = "Flag to support traffic with or without Proxy Protocol on ingress LoadBalancer (only ALB type) and on the EnvoyFilter that implements Proxy Protocol on ingress gateway"
   type        = bool
   default     = false
+}
+
+variable "ingress_topology_spread_constraints" {
+  description = "List of topologySpreadConstraints to apply to the ingress Deployment(s). See k8s apps/v1 TopologySpreadConstraint schema."
+  type        = any
+  default     = null
+}
+
+variable "ingress_extra_service_annotations" {
+  description = "Additional annotations to add to the Service metadata (merged under .Values.ingress.extraServiceAnnotations)."
+  type        = map(string)
+  default     = null
+}
+
+variable "ingress_networkpolicy_enabled" {
+  description = "Enable creation of the ingress NetworkPolicy (requires istioselectors to be non-empty)."
+  type        = bool
+  default     = false
+}
+
+variable "ingress_deployment_name" {
+  description = "Optional override for the ingress Deployment name. If null or empty, the default name is used."
+  type        = string
+  default     = null
 }

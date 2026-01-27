@@ -1,14 +1,19 @@
 ingress:
   name: default
+  deploymentName: null
   namespace: istio-system
   proxyProtocol:
     enabled: false
     allowWithoutProxyProtocol: false
+  networkPolicy:
+    enabled: false
   svctype: LoadBalancer
   lbtype: alb # nlb sdnlb
   lbiptype: public # private
+  extraServiceAnnotations:
   istioNamespaceEnrollmentLabels: {}
   istioselectors: {}
+  extraDeploymentLabels: {}
   albsubnets:
   nlbzonessubnets:
   sdnlbWorkerPoolSelector:
@@ -52,3 +57,5 @@ ingress:
             values:
             - edge
   tolerations:
+  topologySpreadConstraints: []
+

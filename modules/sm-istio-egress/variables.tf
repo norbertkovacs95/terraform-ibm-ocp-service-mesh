@@ -74,6 +74,17 @@ variable "egress_selectors" {
   description = "Istio egress selectors to route outbound egress traffic to the expected istio gateway and to the expected workload. Default to \"app\": \"istio-egress\" \"istio\": \"istio-egress\" \"gateway-instance\": \"istio-egressgateway\". Null not allowed"
 }
 
+variable "egress_extra_deployment_labels" {
+  type = map(string)
+  default = {}
+  nullable = true
+  description = <<-EOT
+    Llabel that defines an additional identity for the egress gateway.
+    This label is applied to:
+      - Deployment metadata.labels
+  EOT
+}
+
 variable "egress_ports" {
   type = list(object(
     {
@@ -196,4 +207,16 @@ variable "egress_tolerations" {
   type        = list(any)
   default     = []
   description = "Istio egress tolerations configuration. Default to tolerate 'dedicated: edge' taint. For more details # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#toleration-v1-core"
+}
+
+variable "egress_topology_spread_constraints" {
+  description = "List of topologySpreadConstraints to apply to the egress Deployment(s). See k8s apps/v1 TopologySpreadConstraint schema."
+  type        = any
+  default     = null
+}
+
+variable "egress_deployment_name" {
+  description = "Optional override for the egress Deployment name. If null or empty, the default name is used."
+  type        = string
+  default     = null
 }

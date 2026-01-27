@@ -54,6 +54,17 @@ locals {
     }
   }
 
+  egress_topology_spread_constraints = var.egress_topology_spread_constraints == null ? {} : {
+    "egress" : {
+      "topologySpreadConstraints" : var.egress_topology_spread_constraints
+    }
+  }
+
+  egress_extra_deployment_labels = length(var.egress_extra_deployment_labels) == 0 ? {} : {
+    "egress" = {
+      "extraDeploymentLabels" = var.egress_extra_deployment_labels
+    }
+  }
 }
 
 ##############################################################################
@@ -122,7 +133,11 @@ resource "helm_release" "istio_egress" {
       name  = "egress.terminationGracePeriodSeconds"
       type  = "string"
       value = var.egress_termination_grace_period
-    }
+    },
+    {
+      name  = "egress.deploymentName"
+      value = var.egress_deployment_name
+    },
   ]
 
   values = [
@@ -133,6 +148,8 @@ resource "helm_release" "istio_egress" {
     yamlencode(local.egress_resources_configuration),
     yamlencode(local.egress_affinity),
     yamlencode(local.egress_tolerations),
+    yamlencode(local.egress_topology_spread_constraints),
+    yamlencode(local.egress_extra_deployment_labels),
   ]
 
 }
@@ -140,7 +157,7 @@ resource "helm_release" "istio_egress" {
 resource "null_resource" "confirm_egress_operational" {
   depends_on = [helm_release.istio_egress]
   provisioner "local-exec" {
-    command     = "${path.module}/scripts/confirm-egress-operational.sh \"${var.namespace}\" \"egress-${var.name}\""
+    command     = "${path.module}/scripts/confirm-egress-operational.sh \"${var.namespace}\" \"${var.name}\""
     interpreter = ["/bin/bash", "-c"]
     environment = {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
