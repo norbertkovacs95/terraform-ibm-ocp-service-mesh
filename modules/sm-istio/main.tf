@@ -90,6 +90,15 @@ locals {
       }
     }
   }
+
+
+  istio_mesh_config_extension_providers = var.mesh_config_extension_providers == null ? {} : {
+    "istioconfiguration" : {
+      "meshConfig" : {
+        "extensionProviders" : var.mesh_config_extension_providers
+      }
+    }
+  }
 }
 
 ##############################################################################
@@ -218,6 +227,7 @@ resource "helm_release" "istio_controlplane" {
     yamlencode(local.istio_pilot_node_selector),
     yamlencode(local.istio_mesh_config_mesh_mtls),
     yamlencode(local.istio_mesh_config_mesh_tls_defaults),
+    yamlencode(local.istio_mesh_config_extension_providers),
   ]
 }
 
