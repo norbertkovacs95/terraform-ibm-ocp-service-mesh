@@ -59,7 +59,9 @@ For more details about Gateway injection, see [Gateways](https://docs.redhat.com
     * [sm-istio-ingress](./modules/sm-istio-ingress)
     * [sm-istio](./modules/sm-istio)
 * [Examples](./examples)
-    * <div style="display: inline-block;"><a href="./examples/basic">Basic OCP cluster single zone and single subnet with RedHat ServiceMesh v3</a></div> <div style="display: inline-block; vertical-align: middle;"><a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=osm-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-ocp-service-mesh/tree/main/examples/basic" target="_blank"><img src="https://cloud.ibm.com/media/docs/images/icons/Deploy_to_cloud.svg" alt="Deploy to IBM Cloud button"></a></div>
+:information_source: Ctrl/Cmd+Click or right-click on the Schematics deploy button to open in a new tab
+    * <a href="./examples/basic">Basic OCP cluster single zone and single subnet with RedHat ServiceMesh v3</a> <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=ocp-service-mesh-basic-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-ocp-service-mesh/tree/main/examples/basic"><img src="https://img.shields.io/badge/Deploy%20with IBM%20Cloud%20Schematics-0f62fe?logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
+    * <a href="./examples/existing_cluster">Basic OCP cluster single zone and single subnet with RedHat ServiceMesh v3</a> <a href="https://cloud.ibm.com/schematics/workspaces/create?workspace_name=ocp-service-mesh-existing_cluster-example&repository=https://github.com/terraform-ibm-modules/terraform-ibm-ocp-service-mesh/tree/main/examples/existing_cluster"><img src="https://img.shields.io/badge/Deploy%20with IBM%20Cloud%20Schematics-0f62fe?logo=ibm&logoColor=white&labelColor=0f62fe" alt="Deploy with IBM Cloud Schematics" style="height: 16px; vertical-align: text-bottom; margin-left: 5px;"></a>
 * [Contributing](#contributing)
 <!-- END OVERVIEW HOOK -->
 
@@ -233,7 +235,6 @@ For more information about the access you need to run Terraform IBM modules, see
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | >= 3.0.0, <4.0.0 |
 | <a name="requirement_ibm"></a> [ibm](#requirement\_ibm) | >= 1.59.0, < 2.0.0 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.2.1, < 4.0.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9.1, < 1.0.0 |
 
 ### Modules
@@ -245,7 +246,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [helm_release.service_mesh_operator](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [null_resource.undeploy_servicemesh](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [terraform_data.undeploy_servicemesh](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) | resource |
 | [time_sleep.wait_operators](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [ibm_container_cluster_config.cluster_config](https://registry.terraform.io/providers/ibm-cloud/ibm/latest/docs/data-sources/container_cluster_config) | data source |
 
@@ -253,10 +254,20 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_clean_servicemesh_on_undeploy"></a> [clean\_servicemesh\_on\_undeploy](#input\_clean\_servicemesh\_on\_undeploy) | Flag to perform a cleanup of ServiceMesh operator custom resources when undeploying the module. Default to true. For more details refer to https://docs.redhat.com/en/documentation/red_hat_openshift_service_mesh/3.1/html-single/uninstalling/index . | `bool` | `true` | no |
 | <a name="input_cluster_config_endpoint_type"></a> [cluster\_config\_endpoint\_type](#input\_cluster\_config\_endpoint\_type) | Specify which type of endpoint to use for for cluster config access: 'default', 'private', 'vpe', 'link'. 'default' value will use the default endpoint of the cluster. | `string` | `"default"` | no |
 | <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Id of the target IBM Cloud OpenShift Cluster | `string` | n/a | yes |
 | <a name="input_develop_mode"></a> [develop\_mode](#input\_develop\_mode) | If true raise time waited for operator deployment and undeployment to allow to debug the cluster | `bool` | `false` | no |
 | <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | The ID of the resource group for the OpenShift Cluster. | `string` | n/a | yes |
+| <a name="input_sm_operator_custom_catalog_description"></a> [sm\_operator\_custom\_catalog\_description](#input\_sm\_operator\_custom\_catalog\_description) | Description of the custom Catalog Source for the Service Mesh Operator | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_image_digest"></a> [sm\_operator\_custom\_catalog\_image\_digest](#input\_sm\_operator\_custom\_catalog\_image\_digest) | Digest of the catalog index image for the custom Catalog Source for the Service Mesh Operator | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_index_name"></a> [sm\_operator\_custom\_catalog\_index\_name](#input\_sm\_operator\_custom\_catalog\_index\_name) | Name of the catalog index for the custom Catalog Source for the Service Mesh Operator | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_name"></a> [sm\_operator\_custom\_catalog\_name](#input\_sm\_operator\_custom\_catalog\_name) | Name of the custom Catalog Source for the Service Mesh Operator | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_namespace"></a> [sm\_operator\_custom\_catalog\_namespace](#input\_sm\_operator\_custom\_catalog\_namespace) | Namespace of the custom Catalog Source for the Service Mesh Operator | `string` | `"openshit-marketplace"` | no |
+| <a name="input_sm_operator_custom_catalog_publisher"></a> [sm\_operator\_custom\_catalog\_publisher](#input\_sm\_operator\_custom\_catalog\_publisher) | Publisher of the custom Catalog Source for the Service Mesh Operator | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_registry_pullsecret_name"></a> [sm\_operator\_custom\_catalog\_registry\_pullsecret\_name](#input\_sm\_operator\_custom\_catalog\_registry\_pullsecret\_name) | Name of the cluster secret to store the pull secret to access the registry for the mirrored Service Mesh Operator images | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_registry_pullsecret_value"></a> [sm\_operator\_custom\_catalog\_registry\_pullsecret\_value](#input\_sm\_operator\_custom\_catalog\_registry\_pullsecret\_value) | Value of the pull secret to access the registry for the mirrored Service Mesh Operator images | `string` | `null` | no |
+| <a name="input_sm_operator_custom_catalog_registry_url"></a> [sm\_operator\_custom\_catalog\_registry\_url](#input\_sm\_operator\_custom\_catalog\_registry\_url) | Registry URL for the mirrored Service Mesh Operator images | `string` | `"icr.io"` | no |
 
 ### Outputs
 

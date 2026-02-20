@@ -12,8 +12,9 @@ locals {
   operators_namespace      = "openshift-operators"
   sm_operator_release_name = "helm-release-smv3-subscription"
   sm_operator_chart_path   = "servicemeshoperator"
-  sm_operator_version      = "v3.0.3"
-  sm_operator_name         = "servicemeshoperator3"
+  # sm_operator_version              = "v3.0.3" # commented as not used in this moment
+  sm_operator_name                 = "servicemeshoperator3"
+  sm_operator_installplan_approval = "Manual"
 
   # timeout in seconds for operators helm releases to be ready
   operators_timeout = 600
@@ -43,9 +44,88 @@ data "ibm_container_cluster_config" "cluster_config" {
 # RedHat Service Mesh Operator, and its dependencies
 ##############################################################################
 
+locals {
+  service_mesh_operator_set_list = [
+    {
+      name  = "operator.namespace"
+      type  = "string"
+      value = local.operators_namespace
+      }, {
+      # name  = "operator.version"
+      # type  = "string"
+      # value = local.sm_operator_version
+      # }, {
+      name  = "operator.name"
+      type  = "string"
+      value = local.sm_operator_name
+      }, {
+      name  = "operator.installplanapproval"
+      type  = "string"
+      value = local.sm_operator_installplan_approval
+    }
+  ]
+
+  sm_operator_custom_catalog_registry_pullsecret_value = var.sm_operator_custom_catalog_registry_pullsecret_value == null || var.sm_operator_custom_catalog_registry_pullsecret_value == "" ? null : {
+    auths = {
+      # tflint-ignore: terraform_deprecated_interpolation
+      "${var.sm_operator_custom_catalog_registry_url}" = {
+        "auth" = base64encode(var.sm_operator_custom_catalog_registry_pullsecret_value)
+      }
+    }
+  }
+
+  service_mesh_operator_set_list_extended = concat(
+    local.service_mesh_operator_set_list,
+    var.sm_operator_custom_catalog_name != null ? [
+      {
+        name  = "operator.source"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_name
+        }, {
+        name  = "operator.sourcenamespace"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_namespace
+        }, {
+        name  = "catalog.name"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_name
+        }, {
+        name  = "catalog.namespace"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_namespace
+        }, {
+        name  = "catalog.description"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_description
+        }, {
+        name  = "catalog.publisher"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_publisher
+        }, {
+        name  = "catalog.registryUrl"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_registry_url
+        }, {
+        name  = "catalog.registryPullSecretName"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_registry_pullsecret_name
+        }, {
+        name  = "catalog.catalogIndexName"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_index_name
+        }, {
+        name  = "catalog.catalogIndexDigest"
+        type  = "string"
+        value = var.sm_operator_custom_catalog_image_digest
+      }
+    ] : []
+  )
+}
+
 # installing helm chart to enable subscriptions for openshift servicemesh v3 operator
 resource "helm_release" "service_mesh_operator" {
-  depends_on = [data.ibm_container_cluster_config.cluster_config, null_resource.undeploy_servicemesh]
+  # depends_on to ensure undeploy script runs after this helm_release is destroyed
+  depends_on = [data.ibm_container_cluster_config.cluster_config]
 
   name              = local.sm_operator_release_name
   chart             = "${path.module}/chart/${local.sm_operator_chart_path}"
@@ -59,20 +139,14 @@ resource "helm_release" "service_mesh_operator" {
 
   disable_openapi_validation = false
 
-  set = [
-    {
-      name  = "smoperator.namespace"
-      type  = "string"
-      value = local.operators_namespace
-      }, {
-      name  = "smoperator.version"
-      type  = "string"
-      value = local.sm_operator_version
-      }, {
-      name  = "smoperator.name"
-      type  = "string"
-      value = local.sm_operator_name
-    }
+  set = local.service_mesh_operator_set_list_extended
+
+  values = [
+    yamlencode({
+      "catalog" = {
+        "registryPullSecretValue" = local.sm_operator_custom_catalog_registry_pullsecret_value
+      }
+    })
   ]
 
   provisioner "local-exec" {
@@ -82,21 +156,32 @@ resource "helm_release" "service_mesh_operator" {
       KUBECONFIG = data.ibm_container_cluster_config.cluster_config.config_file_path
     }
   }
-
 }
 
-# trigger on destroy the removal of operator custom resources
-resource "null_resource" "undeploy_servicemesh" {
-  triggers = {
-    kubeconfig   = data.ibm_container_cluster_config.cluster_config.config_file_path
-    namespace    = local.operators_namespace
-    operatorname = local.sm_operator_name
+locals {
+  scripts_location = "${path.module}/scripts/"
+  kubeconfig_path  = data.ibm_container_cluster_config.cluster_config.config_file_path
+}
+
+resource "terraform_data" "undeploy_servicemesh" {
+  count      = var.clean_servicemesh_on_undeploy ? 1 : 0
+  depends_on = [helm_release.service_mesh_operator]
+  input      = local.kubeconfig_path
+  triggers_replace = {
+    scripts_location = local.scripts_location
+    namespace        = local.operators_namespace
+    operatorname     = local.sm_operator_name
   }
 
+  # removing servicemesh operator csv from the cluster at deprovision time
   provisioner "local-exec" {
-    when       = destroy
-    command    = "${path.module}/scripts/deprovision-sm-operator.sh \"${self.triggers.kubeconfig}\" \"${self.triggers.namespace}\" ${self.triggers.operatorname}"
-    on_failure = continue
+    command     = "${self.triggers_replace.scripts_location}/deprovision-sm-operator.sh \"${self.triggers_replace.namespace}\" \"${self.triggers_replace.operatorname}\""
+    interpreter = ["/bin/bash", "-c"]
+    when        = destroy
+    on_failure  = continue
+    environment = {
+      KUBECONFIG = self.input
+    }
   }
 }
 
