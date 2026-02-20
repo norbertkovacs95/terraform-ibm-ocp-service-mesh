@@ -147,6 +147,13 @@ variable "pilot_tolerations" {
   description = "Istio pilot pods tolerations configuration. Default to empty list. For more details # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#toleration-v1-core"
 }
 
+
+variable "pilot_env" {
+  description = "Optional map of environment variables to set on Istio Pilot (key=value)."
+  type        = map(string)
+  default     = {}
+}
+
 variable "outboundtrafficpolicy" {
   type        = string
   default     = "ALLOW_ANY"

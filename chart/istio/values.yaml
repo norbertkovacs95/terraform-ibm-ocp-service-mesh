@@ -4,6 +4,7 @@ istioconfiguration:
   outboundTrafficPolicy: REGISTRY_ONLY
   defaultpdb: false
   pilot:
+    env:
     enabled: true
     autoscale:
       enabled: "false"
