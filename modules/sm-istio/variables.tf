@@ -64,9 +64,27 @@ variable "istio_enable_default_pod_disruption_budget" {
   default     = null
 }
 
+variable "istio_update_strategy_type" {
+  type        = string
+  description = "Type of strategy to use. Allowed values are InPlace or RevisionBased. When InPlace strategy is used, the existing Istio control plane is updated in-place. When the RevisionBased strategy is used, a new Istio control plane instance is created for every change to the Istio.spec.version field. For more details refer to https://github.com/istio-ecosystem/sail-operator/blob/main/docs/api-reference/sailoperator.io.md#updatestrategytype. Default to InPlace"
+  default     = "InPlace"
+  nullable    = false
+  validation {
+    error_message = "Invalid update strategy type for Istio. Valid values are 'InPlace' or 'RevisionBased'"
+    condition     = contains(["InPlace", "RevisionBased"], var.istio_update_strategy_type)
+  }
+}
+
 variable "pilot_enabled" {
   type        = bool
   description = "Enable Istio pilot. Default to true."
+  nullable    = false
+  default     = true
+}
+
+variable "istio_enable_network_policy" {
+  type        = bool
+  description = "Enable Istio to deploy its Network Policy. Default to true. For more details refer to https://istio.io/latest/docs/setup/additional-setup/network-policy/"
   nullable    = false
   default     = true
 }

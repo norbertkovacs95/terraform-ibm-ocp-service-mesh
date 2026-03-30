@@ -12,9 +12,7 @@ locals {
   operators_namespace      = "openshift-operators"
   sm_operator_release_name = "helm-release-smv3-subscription"
   sm_operator_chart_path   = "servicemeshoperator"
-  # sm_operator_version              = "v3.0.3" # commented as not used in this moment
-  sm_operator_name                 = "servicemeshoperator3"
-  sm_operator_installplan_approval = "Manual"
+  sm_operator_name         = "servicemeshoperator3"
 
   # timeout in seconds for operators helm releases to be ready
   operators_timeout = 600
@@ -45,25 +43,29 @@ data "ibm_container_cluster_config" "cluster_config" {
 ##############################################################################
 
 locals {
-  service_mesh_operator_set_list = [
+  service_mesh_operator_set_list_initial = [
     {
       name  = "operator.namespace"
       type  = "string"
       value = local.operators_namespace
       }, {
-      # name  = "operator.version"
-      # type  = "string"
-      # value = local.sm_operator_version
-      # }, {
       name  = "operator.name"
       type  = "string"
       value = local.sm_operator_name
       }, {
       name  = "operator.installplanapproval"
       type  = "string"
-      value = local.sm_operator_installplan_approval
+      value = var.sm_operator_installplan_approval
     }
   ]
+
+  service_mesh_operator_set_list = var.sm_operator_version == null ? local.service_mesh_operator_set_list_initial : concat(local.service_mesh_operator_set_list_initial, [
+    {
+      name  = "operator.version"
+      type  = "string"
+      value = var.sm_operator_version
+    }
+  ])
 
   sm_operator_custom_catalog_registry_pullsecret_value = var.sm_operator_custom_catalog_registry_pullsecret_value == null || var.sm_operator_custom_catalog_registry_pullsecret_value == "" ? null : {
     auths = {

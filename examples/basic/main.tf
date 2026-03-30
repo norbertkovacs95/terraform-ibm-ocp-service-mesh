@@ -97,10 +97,11 @@ data "ibm_container_cluster_config" "cluster_config" {
 }
 
 module "service_mesh_operator" {
-  source            = "../.."
-  cluster_id        = module.ocp_base.cluster_id
-  develop_mode      = var.develop_mode
-  resource_group_id = module.resource_group.resource_group_id
+  source              = "../.."
+  cluster_id          = module.ocp_base.cluster_id
+  develop_mode        = var.develop_mode
+  resource_group_id   = module.resource_group.resource_group_id
+  sm_operator_version = var.service_mesh_operator_version
 }
 
 module "deploy_istio" {
@@ -127,19 +128,18 @@ resource "time_sleep" "wait_istio" {
   destroy_duration = "60s"
 }
 
-
 module "basic_workload_ingress" {
   depends_on                = [time_sleep.wait_istio]
   source                    = "../../modules/sm-istio-ingress"
-  name                      = "basic-ingress"
-  namespace                 = "basic-ingress"
+  name                      = "alb-ingress"
+  namespace                 = "alb-ingress"
   create_namespace          = true
   force_dataplane_update    = false
   ingress_loadbalancer_type = "alb"
   ingress_service_type      = "LoadBalancer"
   ingress_ip_type           = "public"
   istio_mesh_enrollment     = "default"
-  ingress_affinity          = {}
+  ingress_affinity          = {} # local.alb_affinity
   ingress_selectors = {
     "istio" : "ingress-gateway",
   }

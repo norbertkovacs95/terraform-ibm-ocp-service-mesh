@@ -150,9 +150,16 @@ resource "helm_release" "istio_controlplane" {
       type  = "string"
       value = var.name
       }, {
+      name  = "istioconfiguration.updateStrategyType"
+      type  = "string"
+      value = var.istio_update_strategy_type
+      }, {
       name  = "istioconfiguration.outboundtrafficpolicy"
       type  = "string"
       value = var.outboundtrafficpolicy
+      }, {
+      name  = "istioconfiguration.enableNetworkPolicy"
+      value = var.istio_enable_network_policy
       }, {
       name  = "istioconfiguration.pilot.autoscale.enabled"
       value = var.pilot_autoscaling_enabled

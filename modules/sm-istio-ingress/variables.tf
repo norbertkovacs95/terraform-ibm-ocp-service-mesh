@@ -61,10 +61,14 @@ variable "ingress_loadbalancer_type" {
   type        = string
   default     = "alb"
   nullable    = false
-  description = "IBM Cloud LoadBalancer type bound to the ingress: valid values are \"alb\" for Application Load Balancer and \"nlb\" for Network Load Balancer. If var.ingress_service_type == \"ClusterIP\" this value hasn't effect. For more details refer to https://cloud.ibm.com/docs/vpc?topic=vpc-nlb-vs-elb. Default to alb."
+  description = "IBM Cloud LoadBalancer type bound to the ingress: valid values are \"alb\" for Application Load Balancer, \"nlb\" for Network Load Balancer, and \"other\" to define your LoadBalancer with your custom annotations. If var.ingress_service_type == \"ClusterIP\" this value hasn't effect. For more details refer to https://cloud.ibm.com/docs/vpc?topic=vpc-nlb-vs-elb. Default to ALB."
   validation {
-    condition     = contains(["alb", "nlb"], var.ingress_loadbalancer_type)
-    error_message = "The allowed values for var.ingress_service_type are alb and nlb."
+    condition     = contains(["alb", "nlb", "other"], var.ingress_loadbalancer_type)
+    error_message = "The allowed values for var.ingress_service_type are alb, nlb or other."
+  }
+  validation {
+    condition     = var.ingress_loadbalancer_type != "other" || var.ingress_custom_annotations != {}
+    error_message = "If var.ingress_loadbalancer_type is set to \"other\" var.ingress_custom_annotations cannot be empty"
   }
 }
 
@@ -82,7 +86,7 @@ variable "ingress_ip_type" {
 variable "istio_mesh_enrollment" {
   type        = string
   default     = "default"
-  description = "Name of the Istio mesh controlplane to enroll this dataplane with. Default value to default. This value is used to generate discovery selectors, to override the computed values customise var.ingress_discovery_custom_configuration."
+  description = "Name of the Istio mesh controlplane to enroll this dataplane with. Default value to \"default\". This value is used to generate discovery selectors, to override the computed values customise var.ingress_discovery_custom_configuration."
 }
 
 variable "istio_ingress_deployment_timeout" {
@@ -95,6 +99,13 @@ variable "ingress_discovery_custom_configuration" {
   type        = map(string)
   default     = null
   description = "Map of key-value entries to set custom istio discovery labels. Default to null to autogenerate the labels according to var.istio_mesh_enrollment value. For more details about istio discovery configuration refer to https://docs.redhat.com/en/documentation/red_hat_openshift_service_mesh/3.0/html/installing/ossm-sidecar-injection#ossm-about-sidecar-injection_ossm-sidecar-injection and https://docs.redhat.com/en/documentation/red_hat_openshift_service_mesh/3.0/html/installing/ossm-deploying-multiple-service-meshes-on-single-cluster."
+}
+
+variable "ingress_custom_annotations" {
+  type        = map(string)
+  default     = {}
+  nullable    = false
+  description = "Istio ingress key-value map to customise your ingress LoadBalaner annotations set. Cannot be empty if var.ingress_loadbalancer_type = \"other\". Default to empty. Null not allowed"
 }
 
 variable "ingress_selectors" {
