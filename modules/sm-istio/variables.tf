@@ -171,6 +171,13 @@ variable "pilot_tolerations" {
   description = "Istio pilot pods tolerations configuration. Default to empty list. For more details # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#toleration-v1-core"
 }
 
+
+variable "pilot_env" {
+  description = "Optional map of environment variables to set on Istio Pilot (key=value)."
+  type        = map(string)
+  default     = {}
+}
+
 variable "outboundtrafficpolicy" {
   type        = string
   default     = "ALLOW_ANY"
@@ -286,4 +293,10 @@ variable "rollback_on_failure" {
   description = "Flag to automatically rollback the helm chart on installation failure."
   type        = bool
   default     = true
+}
+
+variable "mesh_config_extension_providers" {
+  type        = list(any)
+  default     = null
+  description = "List of mesh-wide extension providers to place under spec.values.meshConfig.extensionProviders."
 }
