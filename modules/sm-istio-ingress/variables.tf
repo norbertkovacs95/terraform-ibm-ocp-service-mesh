@@ -325,3 +325,8 @@ variable "ingress_topology_spread_constraints" {
   default     = null
 }
 
+variable "ingress_networkpolicy_enabled" {
+  description = "Enable creation of the ingress NetworkPolicy (requires istioselectors to be non-empty)."
+  type        = bool
+  default     = false
+}
