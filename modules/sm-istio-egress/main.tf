@@ -56,6 +56,11 @@ locals {
     }
   }
 
+  egress_topology_spread_constraints = var.egress_topology_spread_constraints == null ? {} : {
+    "egress" : {
+      "topologySpreadConstraints" : var.egress_topology_spread_constraints
+    }
+  }
 }
 
 ##############################################################################
@@ -158,6 +163,7 @@ resource "helm_release" "istio_egress" {
     yamlencode(local.egress_resources_configuration),
     yamlencode(local.egress_affinity),
     yamlencode(local.egress_tolerations),
+    yamlencode(local.egress_topology_spread_constraints),
   ]
 
 }
