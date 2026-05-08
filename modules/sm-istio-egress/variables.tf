@@ -237,3 +237,19 @@ variable "egress_topology_spread_constraints" {
   default     = null
 }
 
+variable "egress_extra_deployment_labels" {
+  type = map(string)
+  default = {}
+  nullable = true
+  description = <<-EOT
+    Llabel that defines an additional identity for the egress gateway.
+    This label is applied to:
+      - Deployment metadata.labels
+  EOT
+}
+
+variable "egress_deployment_name" {
+  description = "Optional override for the egress Deployment name. If null or empty, the default name is used."
+  type        = string
+  default     = null
+}
