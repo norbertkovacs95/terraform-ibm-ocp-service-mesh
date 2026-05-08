@@ -1,14 +1,18 @@
 # Allow outside traffic to access the gateway
 # This is optional, only needed in case your cluster contains restrictive NetworkPolicies
-#apiVersion: networking.k8s.io/v1
-#kind: NetworkPolicy
-#metadata:
-#  name: gatewayingress
-#spec:
-#  podSelector:
-#    matchLabels:
-#      istio: egressgateway
-#  ingress:
-#    - {}
-#  policyTypes:
-#  - Ingress
+{{- if and .Values.ingress.networkPolicy.enabled .Values.ingress.istioselectors }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Values.ingress.name }}
+  namespace: {{ $.Values.ingress.namespace }}
+spec:
+  podSelector:
+    matchLabels:
+{{ toYaml .Values.ingress.istioselectors | indent 6 }}
+  ingress:
+    - {}
+  policyTypes:
+    - Ingress
+{{- end }}
+
