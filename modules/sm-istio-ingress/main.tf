@@ -73,6 +73,11 @@ locals {
     }
   }
 
+  ingress_topology_spread_constraints = var.ingress_topology_spread_constraints == null ? {} : {
+    "ingress" : {
+      "topologySpreadConstraints" : var.ingress_topology_spread_constraints
+    }
+  }
 }
 
 ##############################################################################
@@ -191,6 +196,7 @@ resource "helm_release" "istio_ingress" {
     yamlencode(local.ingress_resources_configuration),
     yamlencode(local.ingress_affinity),
     yamlencode(local.ingress_tolerations),
+    yamlencode(local.ingress_topology_spread_constraints),
   ]
 
 }

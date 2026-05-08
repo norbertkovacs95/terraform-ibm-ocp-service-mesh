@@ -224,3 +224,10 @@ variable "rollback_on_failure" {
   type        = bool
   default     = true
 }
+
+variable "egress_topology_spread_constraints" {
+  description = "List of topologySpreadConstraints to apply to the egress Deployment(s). See k8s apps/v1 TopologySpreadConstraint schema."
+  type        = any
+  default     = null
+}
+
