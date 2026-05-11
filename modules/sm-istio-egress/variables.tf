@@ -238,9 +238,9 @@ variable "egress_topology_spread_constraints" {
 }
 
 variable "egress_extra_deployment_labels" {
-  type = map(string)
-  default = {}
-  nullable = true
+  type        = map(string)
+  default     = {}
+  nullable    = true
   description = <<-EOT
     Llabel that defines an additional identity for the egress gateway.
     This label is applied to:
