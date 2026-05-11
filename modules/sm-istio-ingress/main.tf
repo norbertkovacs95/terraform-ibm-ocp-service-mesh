@@ -78,7 +78,7 @@ locals {
       "topologySpreadConstraints" : var.ingress_topology_spread_constraints
     }
   }
-  
+
   ingress_networkpolicy_enabled = {
     "ingress" : {
       "networkPolicy" : {
