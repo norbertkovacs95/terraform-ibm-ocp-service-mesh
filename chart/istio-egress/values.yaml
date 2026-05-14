@@ -1,8 +1,11 @@
 egress:
   name: default
+  deploymentName:
   namespace: istio-system
   istioNamespaceEnrollmentLabels: {}
   istioselectors: {}
+  extraDeploymentLabels: {}
+  svctype: ClusterIP
   ports:
   - port: 80
     name: svc-http
@@ -30,6 +33,7 @@ egress:
     #   memory: 128Mi
   # nodeselector: { "ibm-cloud.kubernetes.io/worker-pool-name": "default" }
   terminationGracePeriodSeconds: 30
+  topologySpreadConstraints: []
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
