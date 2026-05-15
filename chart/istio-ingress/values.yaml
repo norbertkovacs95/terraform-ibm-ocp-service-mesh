@@ -5,8 +5,6 @@ ingress:
   proxyProtocol:
     enabled: false
     allowWithoutProxyProtocol: false
-  networkPolicy:
-    enabled: false
   svctype: LoadBalancer
   lbtype: alb # nlb sdnlb
   lbiptype: public # private

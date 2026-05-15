@@ -79,14 +79,6 @@ locals {
     }
   }
 
-  ingress_networkpolicy_enabled = {
-    "ingress" : {
-      "networkPolicy" : {
-        enabled : var.ingress_networkpolicy_enabled
-      }
-    }
-  }
-
   egress_extra_deployment_labels = length(var.ingress_extra_deployment_labels) == 0 ? {} : {
     "ingress" = {
       "extraDeploymentLabels" = var.ingress_extra_deployment_labels
@@ -236,7 +228,6 @@ resource "helm_release" "istio_ingress" {
     yamlencode(local.ingress_affinity),
     yamlencode(local.ingress_tolerations),
     yamlencode(local.ingress_topology_spread_constraints),
-    yamlencode(local.ingress_networkpolicy_enabled),
     yamlencode(local.egress_extra_deployment_labels)
   ]
 

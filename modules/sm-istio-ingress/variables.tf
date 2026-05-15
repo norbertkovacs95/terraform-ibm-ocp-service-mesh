@@ -47,7 +47,7 @@ variable "prefix" {
 
 variable "name" {
   type        = string
-  description = "Name of the Istio ingress deployment"
+  description = "Name of the Istio ingress"
 }
 
 variable "create_namespace" {
@@ -325,14 +325,8 @@ variable "ingress_topology_spread_constraints" {
   default     = null
 }
 
-variable "ingress_networkpolicy_enabled" {
-  description = "Enable creation of the ingress NetworkPolicy (requires istioselectors to be non-empty)."
-  type        = bool
-  default     = false
-}
-
 variable "ingress_deployment_name" {
-  description = "Optional override for the ingress Deployment name. If null or empty, the default name is used."
+  description = "Optional override for the ingress Deployment name. If null or empty, the value of var.name is used as default."
   type        = string
   default     = null
 }

@@ -180,9 +180,10 @@ variable "pilot_tolerations" {
 
 
 variable "pilot_env" {
-  description = "Optional map of environment variables to set on Istio Pilot (key=value)."
+  description = "Optional key-value map of environment variables to set on Istio Pilot deployment. Default to empty map."
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "outboundtrafficpolicy" {
@@ -305,5 +306,5 @@ variable "rollback_on_failure" {
 variable "mesh_config_extension_providers" {
   type        = list(any)
   default     = null
-  description = "List of mesh-wide extension providers to place under spec.values.meshConfig.extensionProviders."
+  description = "List of mesh-wide extension providers to place under spec.values.meshConfig.extensionProviders. Default to null."
 }

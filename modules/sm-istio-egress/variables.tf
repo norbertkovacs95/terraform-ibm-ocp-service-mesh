@@ -46,7 +46,7 @@ variable "prefix" {
 
 variable "name" {
   type        = string
-  description = "Name of the Istio egress deployment"
+  description = "Name of the Istio egress"
 }
 
 variable "create_namespace" {
@@ -249,7 +249,7 @@ variable "egress_extra_deployment_labels" {
 }
 
 variable "egress_deployment_name" {
-  description = "Optional override for the egress Deployment name. If null or empty, the default name is used."
+  description = "Optional override for the egress Deployment name. If null or empty, the value of var.name is used as default."
   type        = string
   default     = null
 }
