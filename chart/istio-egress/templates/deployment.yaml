@@ -24,7 +24,11 @@ spec:
         {{- if .Values.egress.istioselectors }}
         {{- toYaml .Values.egress.istioselectors | nindent 8 }}
         {{- end }}
+        {{- if eq .Values.egress.istioMeshEnrollment "default" }}
         sidecar.istio.io/inject: "true"
+        {{- else }}
+        istio.io/rev: "{{ .Values.egress.istioMeshEnrollment }}"
+        {{- end }}
         istio.io/gateway: "{{ .Values.egress.name }}.{{ .Values.egress.namespace }}"
     spec:
       {{- if .Values.egress.affinity }}
@@ -42,11 +46,11 @@ spec:
           {{- toYaml .Values.egress.affinity.podAntiAffinity | nindent 10 }}
         {{- end }}
       {{- end }}
-      serviceAccountName: {{ .Values.egress.name }}
       {{- if .Values.egress.topologySpreadConstraints }}
       topologySpreadConstraints:
       {{- toYaml .Values.egress.topologySpreadConstraints | nindent 6 }}
       {{- end }}
+      serviceAccountName: {{ .Values.egress.name }}-service-account
       {{- if .Values.egress.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.egress.terminationGracePeriodSeconds }}
       {{- end }}

@@ -2,6 +2,7 @@ egress:
   name: default
   deploymentName:
   namespace: istio-system
+  istioMeshEnrollment:
   istioNamespaceEnrollmentLabels: {}
   istioselectors: {}
   extraDeploymentLabels: {}
