@@ -95,6 +95,25 @@ The default values are the below ones:
 }
 ```
 
+
+### Sidecar proxy resources requests and limits
+
+The input variable `proxy_resources` allows you to set resource requests and limits for the istio sidecar proxy container injected into workload pods. Defaults to `null`, leaving Istio sidecar defaults in place. For more details about setting these resources parameters please refer [to this doc](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#resourcerequirements-v1-core)
+
+```hcl
+proxy_resources = {
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  limits = {
+    cpu    = "500m"
+    memory = "256Mi"
+  }
+}
+```
+
+
 ### DNS Capture Configuration for ServiceEntry Resources
 
 DNS capture is **enabled by default** in this module to support ServiceEntry resources that rely on DNS resolution. The default configuration sets `ISTIO_META_DNS_AUTO_ALLOCATE` and `ISTIO_META_DNS_CAPTURE` to `"true"` in the proxy metadata.
@@ -250,6 +269,7 @@ For all the configuration parameters details refer to the section below
 | <a name="input_proxy_auto_inject"></a> [proxy\_auto\_inject](#input\_proxy\_auto\_inject) | Controls automatic sidecar injection. Set to 'disabled' to inject only workloads that have the annotation sidecar.istio.io/inject: 'true'. Set to 'enabled' (default) to inject all workloads except those with sidecar.istio.io/inject: 'false'. Maps to spec.values.global.proxy.autoInject. For more details: https://github.com/istio-ecosystem/sail-operator/blob/main/docs/api-reference/sailoperator.io.md#proxyconfig | `string` | `"enabled"` | no |
 | <a name="input_proxy_exclude_ip_ranges"></a> [proxy\_exclude\_ip\_ranges](#input\_proxy\_exclude\_ip\_ranges) | Comma-separated list of IP ranges in CIDR form to be excluded from Envoy proxy interception (e.g. "10.0.0.1/8,192.168.100.0/24"). Maps to spec.values.global.proxy.excludeIPRanges. When null, no exclusions are configured. For more details: https://github.com/istio-ecosystem/sail-operator/blob/main/docs/api-reference/sailoperator.io.md#proxyconfig | `string` | `null` | no |
 | <a name="input_proxy_metadata"></a> [proxy\_metadata](#input\_proxy\_metadata) | Additional key-value pairs to configure meshConfig.defaultConfig.proxyMetadata. Use this to add custom proxy metadata like HTTP\_PROXY, HTTPS\_PROXY, etc. When enable\_dns\_capture is true, do not include ISTIO\_META\_DNS\_AUTO\_ALLOCATE or ISTIO\_META\_DNS\_CAPTURE here (use the enable\_dns\_capture flag instead). When enable\_dns\_capture is false, you can set these keys directly in proxy\_metadata if needed. | `map(string)` | `{}` | no |
+| <a name="input_proxy_resources"></a> [proxy\_resources](#input\_proxy\_resources) | Configure resource requests and limits for the sidecar proxy container. Default to null (uses Istio defaults). For more details https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.25/#resourcerequirements-v1-core | <pre>object({<br/>    limits : optional(map(string), null),<br/>    requests : optional(map(string), null)<br/>  })</pre> | `null` | no |
 | <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id) | The ID of the resource group for the OpenShift Cluster. | `string` | n/a | yes |
 | <a name="input_rollback_on_failure"></a> [rollback\_on\_failure](#input\_rollback\_on\_failure) | Flag to automatically rollback the helm chart on installation failure. | `bool` | `true` | no |
 | <a name="input_telemetry_config"></a> [telemetry\_config](#input\_telemetry\_config) | Telemetry configuration for Istio. When null, no telemetry configuration is applied. For more details: https://github.com/istio-ecosystem/sail-operator/blob/main/docs/api-reference/sailoperator.io.md | <pre>object({<br/>    enabled : optional(bool, true)<br/>    v2 : optional(object({<br/>      enabled : optional(bool, true)<br/>      prometheus : optional(object({<br/>        enabled : optional(bool, true)<br/>      }), null)<br/>    }), null)<br/>  })</pre> | `null` | no |
